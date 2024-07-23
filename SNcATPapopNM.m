@@ -1044,7 +1044,7 @@ fig10=figure(10);
 set(fig10, 'Position', [5, 50, 1920, 955]);
 sec=0.001;
 sizz=10;
-suptitle('Energy consumption in different cellular processes')
+subtitle('Energy consumption in different cellular processes')
 subplot(411)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(V_id)),V_id,'r')
