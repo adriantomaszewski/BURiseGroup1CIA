@@ -778,8 +778,8 @@ end
 phi_er=log(cai_array./caer_array);
 phi_mt=log(cai_array./camt_array);
 
-[snc_firings1]=ConvertAPtoST(snc_firings,1);
-% snc_firings1=snc_firings;
+%[snc_firings1]=ConvertAPtoST(snc_firings,1);
+snc_firings1=snc_firings;
 
 base1=1/2;
 sncfrequency=size(snc_firings1,1)/(2*base1.*dt.*(Ttime).*1e-3);
