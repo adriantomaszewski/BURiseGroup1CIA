@@ -48,7 +48,7 @@ caer_array=zeros(1,Ttime);camt_array=zeros(1,Ttime);LDOPA_array=zeros(1,Ttime);
 ATP_array=zeros(1,Ttime);LAC_array=zeros(1,Ttime);PYR_array=zeros(1,Ttime);
 GAP_array=zeros(1,Ttime);GSH_array=zeros(1,Ttime);F6P_array=zeros(1,Ttime);
 F26P_array=zeros(1,Ttime);PCr_array=zeros(1,Ttime);NADPH_array=zeros(1,Ttime);
-ROS_array=zeros(1,Ttime);ASYN_array=zeros(1,Ttime);ASYNA_array=zeros(1,Ttime);
+ROS_array=zeros(1,Ttime);CASP9_array=zeros(1,Ttime);ASYNA_array=zeros(1,Ttime);
 ASYNT_array=zeros(1,Ttime);ASYNG_array=zeros(1,Ttime);LB_array=zeros(1,Ttime);
 nai_array=zeros(1,Ttime);ki_array=zeros(1,Ttime);IAP_array=zeros(1,Ttime);
 
@@ -291,7 +291,10 @@ k13b=0.0035/1e3; % (msec)-1
 kcalif = 1;
 
 % Calcium pump inhibitor value
-kcpiv = 0.1;
+kcpiv = 1;
+
+%Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at 0.019)
+Ca_thresh = 0.00010001;
 
 Mit=1;
 Sig_ers=000;%0.0001;
@@ -775,7 +778,7 @@ for k=1:Ttime
     ATP_array(k)=ATP;LAC_array(k)=LAC;PYR_array(k)=PYR;GAP_array(k)=GAP;GSH_array(k)=GSH;
     F6P_array(k)=F6P;F26P_array(k)=F26P;PCr_array(k)=PCr;NADPH_array(k)=NADPH;IAP_array(k)=IAP;
     
-    ROS_array(k)=ROS;ASYN_array(k)=ASYN;ASYNA_array(k)=ASYNA;ASYNT_array(k)=ASYNT;
+    ROS_array(k)=ROS;CASP9_array(k)=casp9;ASYNA_array(k)=ASYNA;ASYNT_array(k)=ASYNT;
     ASYNG_array(k)=ASYNG;LB_array(k)=LB;
     LDOPA_array(k)=LDOPA;
     
@@ -786,7 +789,11 @@ for k=1:Ttime
     phi_mt(k)=phimt;
     
     %%% ADDITION FOR RELATING CALCIUM TO STRESS
-    Sig_mts = Ca_mt - Ca_mtinit;
+    if Ca_mt > Ca_thresh
+        Sig_mts = Ca_mt - Ca_mtinit;
+    else
+        Sig_mts = 0
+    end
 
 
 
@@ -966,10 +973,10 @@ title('ROS conc.','fontsize',sizz,'fontweight','bold')
 % ylim([0.09 1.11])
 subplot(612)
 set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(ASYN_array)),ASYN_array,'r')
+plot(sec*dt*(1:numel(CASP9_array)),CASP9_array,'r')
 % xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('\alpha-syn conc. (mM)','fontweight','bold')
-title('\alpha-syn conc.','fontsize',sizz,'fontweight','bold')
+ylabel('\casp9 conc. (mM)','fontweight','bold')
+title('\casp9 conc.','fontsize',sizz,'fontweight','bold')
 subplot(613)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(ASYNA_array)),ASYNA_array,'r')
