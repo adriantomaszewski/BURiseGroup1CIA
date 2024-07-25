@@ -50,7 +50,7 @@ GAP_array=zeros(1,Ttime);GSH_array=zeros(1,Ttime);F6P_array=zeros(1,Ttime);
 F26P_array=zeros(1,Ttime);PCr_array=zeros(1,Ttime);NADPH_array=zeros(1,Ttime);
 ROS_array=zeros(1,Ttime);ASYN_array=zeros(1,Ttime);ASYNA_array=zeros(1,Ttime);
 ASYNT_array=zeros(1,Ttime);ASYNG_array=zeros(1,Ttime);LB_array=zeros(1,Ttime);
-nai_array=zeros(1,Ttime);ki_array=zeros(1,Ttime);
+nai_array=zeros(1,Ttime);ki_array=zeros(1,Ttime);IAP_array=zeros(1,Ttime);
 
 V_id=zeros(1,Ttime);
 V_dp=zeros(1,Ttime);
@@ -97,7 +97,7 @@ PTP_mit_actinit=0;
 Cytc_mitinit=1;
 Cytcinit=0;
 Cytc_casp9init=0;
-IAPinit=0;
+IAPinit=1;
 casp9_act_IAPinit=0;
 casp3_act_IAPinit=0;
 NADPHinit=250*0.001;%mM
@@ -286,6 +286,12 @@ k13f=5; % (mM*msec)-1
 k13b=0.0035/1e3; % (msec)-1
 
 % STRESS
+
+% Calcium influence factor on ROSmit
+kcalif = 1;
+
+% Calcium pump inhibitor value
+kcpiv = 0.1;
 
 Mit=1;
 Sig_ers=000;%0.0001;
@@ -667,7 +673,7 @@ for k=1:Ttime
     y_nknxt = y_nk + (beta_nk*(1.00000-y_nk)-alpha_nk*y_nk)*dt;
     ATPusednxt = ATPused+(-ATPused+(1.00000/(F*vol_cyt))*(I_nk+I_pmca))*dt;%ATPused
     Ca_ernxt = Ca_er + ((beta_er/rho_er)*(J_pump-(J_ch+J_leak)))*dt;
-    Ca_mtnxt = Ca_mt + 0.1 * ((beta_mt/rho_mt)*(J_in-J_out))*dt;
+    Ca_mtnxt = Ca_mt + kcpiv * ((beta_mt/rho_mt)*(J_in-J_out))*dt;
     cdanxt = cda+(jsynt + jdat - jvmat - jida + jldopa)*dt;%cda
     vdanxt = vda+(jvmat - jrel)*dt;%vda
     edanxt = eda+(jrel - jdat - jeda)*dt;%eda
@@ -699,7 +705,10 @@ for k=1:Ttime
     ASYNGnxt = ASYNG+(Vasyn_agg - Vasyn_lyso - Vasyn_lb)*dt;%ASYNG
     LBnxt = LB+(Vasyn_lb)*dt;%LB
     
-    ROS_mitnxt = ROS_mit+(k29f*Sig_mts*Mit)*dt;%ROS_mit
+% Calcium ion effect on ROS (original ROS_mitnxt = ROS_mit+(k29f*Sig_mts*Mit)*dt;)
+
+    ROS_mitnxt = ROS_mit+((k29f*Sig_mts*Mit)+((Ca_mt*kcalif).^2))*dt; %ROS_mit
+
     PTP_mit_actnxt = PTP_mit_act+(k30f*ROS_mit*PTP_mit)*dt;%PTP_mit_act
     Cytc_mitnxt = Cytc_mit+(-k31f*PTP_mit_act*Cytc_mit)*dt;%Cytc_mit
     Cytcnxt = Cytc+(-k27f*Cytc*casp9+k27b*Cytc_casp9+k31f*PTP_mit_act*Cytc_mit)*dt;%Cytc
@@ -764,7 +773,7 @@ for k=1:Ttime
     calb_array(k)=Calb;cam_array(k)=Cam;caer_array(k)=Ca_er;camt_array(k)=Ca_mt;
     
     ATP_array(k)=ATP;LAC_array(k)=LAC;PYR_array(k)=PYR;GAP_array(k)=GAP;GSH_array(k)=GSH;
-    F6P_array(k)=F6P;F26P_array(k)=F26P;PCr_array(k)=PCr;NADPH_array(k)=NADPH;
+    F6P_array(k)=F6P;F26P_array(k)=F26P;PCr_array(k)=PCr;NADPH_array(k)=NADPH;IAP_array(k)=IAP;
     
     ROS_array(k)=ROS;ASYN_array(k)=ASYN;ASYNA_array(k)=ASYNA;ASYNT_array(k)=ASYNT;
     ASYNG_array(k)=ASYNG;LB_array(k)=LB;
@@ -779,8 +788,9 @@ for k=1:Ttime
     %%% ADDITION FOR RELATING CALCIUM TO STRESS
     Sig_mts = Ca_mt - Ca_mtinit;
 
+
+
     disp(k*dt)
-    disp(Sig_mts)
 end
 
 phi_er=log(cai_array./caer_array);
@@ -1002,6 +1012,14 @@ plot(sec*dt*(1:numel(GSH_array)),GSH_array,'r')
 xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
 ylabel('GSH conc. (mM)','fontweight','bold')
 title('GSH conc.','fontsize',sizz,'fontweight','bold')
+ylabel('IAP conc. (mM)','fontweight','bold')
+title('IAP conc.','fontsize',sizz,'fontweight','bold')
+subplot(212)
+set(gca,'fontsize',sizz);
+plot(sec*dt*(1:numel(IAP_array)),IAP_array,'r')
+xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
+ylabel('IAP conc. (mM)','fontweight','bold')
+title('IAP conc.','fontsize',sizz,'fontweight','bold')
 % f7=strcat('Add_',filename);
 % saveas(fig7,f7,'png');
 % %

@@ -21,6 +21,6 @@ gl = 1; % Glucose concentration in mM
 mt = 1; % Extend of oxygen available (0-no oxygen; 1-adequate oxygen)
 filename = 'test';
 
-dur=1000; % Duration of simulation in milliseconds
+dur=50000; % Duration of simulation in milliseconds
 
 SNcATPapopNM(dur,gl,mt,filename)
