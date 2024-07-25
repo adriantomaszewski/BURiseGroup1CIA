@@ -285,9 +285,11 @@ k12b=0.0035/1e3; % (msec)-1
 k13f=5; % (mM*msec)-1
 k13b=0.0035/1e3; % (msec)-1
 
+% STRESS
+
 Mit=1;
-Sig_ers=0;%0.0001;
-Sig_mts=0;%0.0001;
+Sig_ers=000;%0.0001;
+Sig_mts=000;%0.0001;
 PTP_mit=1;
 
 % Energy Metabolism
@@ -497,9 +499,11 @@ for k=1:Ttime
     J_leak = k_leak*(Ca_er-Ca_i); %J_leak
     
     % Mito
+    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     J_out = (k_out*((power(Ca_i, 2.00000))/(power(K3, 2.00000)+power(Ca_i, 2.00000)))+k_m)*Ca_mt; % J_out
     J_in = k_in*((power(Ca_i, 8.00000))/(power(K2, 8.00000)+power(Ca_i, 8.00000)));%*ATP; % J_in
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     % Calcium dynamics
     J_Ca = J_ca-1*(J_calb+4.00000*J_cam)-J_pump+J_ch+J_leak-J_in+J_out;
     
@@ -663,7 +667,7 @@ for k=1:Ttime
     y_nknxt = y_nk + (beta_nk*(1.00000-y_nk)-alpha_nk*y_nk)*dt;
     ATPusednxt = ATPused+(-ATPused+(1.00000/(F*vol_cyt))*(I_nk+I_pmca))*dt;%ATPused
     Ca_ernxt = Ca_er + ((beta_er/rho_er)*(J_pump-(J_ch+J_leak)))*dt;
-    Ca_mtnxt = Ca_mt + ((beta_mt/rho_mt)*(J_in-J_out))*dt;
+    Ca_mtnxt = Ca_mt + 0.1 * ((beta_mt/rho_mt)*(J_in-J_out))*dt;
     cdanxt = cda+(jsynt + jdat - jvmat - jida + jldopa)*dt;%cda
     vdanxt = vda+(jvmat - jrel)*dt;%vda
     edanxt = eda+(jrel - jdat - jeda)*dt;%eda
@@ -766,19 +770,23 @@ for k=1:Ttime
     ASYNG_array(k)=ASYNG;LB_array(k)=LB;
     LDOPA_array(k)=LDOPA;
     
-%     phier=Ca_i-Ca_er;
-%     phimt=Ca_i-Ca_mt;
-%     
-%     phi_er(k)=phier;
-%     phi_mt(k)=phimt;
+    phier=Ca_i-Ca_er;
+    phimt=Ca_i-Ca_mt;
+     
+    phi_er(k)=phier;
+    phi_mt(k)=phimt;
     
+    %%% ADDITION FOR RELATING CALCIUM TO STRESS
+    Sig_mts = Ca_mt - Ca_mtinit;
+
     disp(k*dt)
+    disp(Sig_mts)
 end
 
 phi_er=log(cai_array./caer_array);
 phi_mt=log(cai_array./camt_array);
 
-%[snc_firings1]=ConvertAPtoST(snc_firings,1);
+% [snc_firings1]=ConvertAPtoST(snc_firings, 1);
 snc_firings1=snc_firings;
 
 base1=1/2;
@@ -1044,7 +1052,7 @@ fig10=figure(10);
 set(fig10, 'Position', [5, 50, 1920, 955]);
 sec=0.001;
 sizz=10;
-subtitle('Energy consumption in different cellular processes')
+% suptitle('Energy consumption in different cellular processes')
 subplot(411)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(V_id)),V_id,'r')
