@@ -64,7 +64,6 @@ Ca_mtinit = 0.1*0.001; % mM % 0.4e-3
 cdainit = 1e-4; %mM%1e-4
 vdainit = 500; %mM 500
 edainit = 4e-6; %mM
-Iextinit=0; %Iext
 ATPusedinit=0;
 calinit=1; %mM
 cai_calinit=0; %mM
