@@ -740,7 +740,6 @@ for k=1:Ttime
     disp(k*dt)
 end
 
-% [snc_firings1]=ConvertAPtoST(snc_firings, 1);
 snc_firings1=snc_firings;
 
 base1=1/2;
