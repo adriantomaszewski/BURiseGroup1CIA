@@ -740,9 +740,6 @@ for k=1:Ttime
     disp(k*dt)
 end
 
-phi_er=log(cai_array./caer_array);
-phi_mt=log(cai_array./camt_array);
-
 % [snc_firings1]=ConvertAPtoST(snc_firings, 1);
 snc_firings1=snc_firings;
 
@@ -841,67 +838,8 @@ refline([0 mean(camt_array)]);
 fh=strcat(num2str(mean(camt_array)));legend(fh);
 % f3=strcat('Ca_',filename);
 % saveas(fig3,f3,'png');
-%
-fig4=figure(4);
-set(fig4, 'Position', [5, 50, 1920, 955]);
-sizz=10;
-subplot(311)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(F6P_array)),F6P_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('F6P conc. (mM)','fontweight','bold')
-title('F6P conc.','fontsize',sizz,'fontweight','bold')
-% ylim([0.09 1.11])
-subplot(312)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(F26P_array)),F26P_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('F26P conc. (mM)','fontweight','bold')
-title('F26P conc.','fontsize',sizz,'fontweight','bold')
-% ylim([2.3 2.5])
-subplot(313)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(GAP_array)),GAP_array,'r')
-% ylim([0.38 0.410])
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('GAP conc. (mM)','fontweight','bold')
-title('GAP conc.','fontsize',sizz,'fontweight','bold')
-% f4=strcat('EM1_',filename);
-% saveas(fig4,f4,'png');
 
-fig5=figure(5);
-set(fig5, 'Position', [5, 50, 1920, 955]);
-sizz=10;
-subplot(411)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(PYR_array)),PYR_array,'r')
-% ylim([0.8 1.1]*1e-3)
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('PYR conc. (mM)','fontweight','bold')
-title('PYR','fontsize',sizz,'fontweight','bold')
-subplot(412)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(LAC_array)),LAC_array,'r')
-% ylim([0.9 1.1]*1e-3)
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('LAC conc. (mM)','fontweight','bold')
-title('LAC','fontsize',sizz,'fontweight','bold')
-subplot(413)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(ATP_array)),ATP_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('ATP conc. (mM)','fontweight','bold')
-title('ATP conc.','fontsize',sizz,'fontweight','bold')
-subplot(414)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(PCr_array)),PCr_array,'r')
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('PCr conc. (mM)','fontweight','bold')
-title('PCr conc.','fontsize',sizz,'fontweight','bold')
-% f5=strcat('EM2_',filename);
-% saveas(fig5,f5,'png');
-
-fig6=figure(6);
+fig6=figure(4);
 set(fig6, 'Position', [5, 50, 1920, 955]);
 sizz=10;
 subplot(611)
@@ -917,91 +855,23 @@ plot(sec*dt*(1:numel(CASP9_array)),CASP9_array,'r')
 % xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
 ylabel('\casp9 conc. (mM)','fontweight','bold')
 title('\casp9 conc.','fontsize',sizz,'fontweight','bold')
-subplot(613)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(ASYNA_array)),ASYNA_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('\alpha-syn* conc. (mM)','fontweight','bold')
-title('\alpha-syn* conc.','fontsize',sizz,'fontweight','bold')
-subplot(614)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(ASYNT_array)),ASYNT_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('\alpha-syn-tag conc. (mM)','fontweight','bold')
-title('\alpha-syn-tag conc.','fontsize',sizz,'fontweight','bold')
-subplot(615)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(ASYNG_array)),ASYNG_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('\alpha-syn-agg conc. (mM)','fontweight','bold')
-title('\alpha-syn-agg conc.','fontsize',sizz,'fontweight','bold')
-subplot(616)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(LB_array)),LB_array,'r')
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('LB conc. (mM)','fontweight','bold')
-title('LB conc.','fontsize',sizz,'fontweight','bold')
-% f6=strcat('PDP_',filename);
-% saveas(fig6,f6,'png');
 
-fig7=figure(7);
-set(fig7, 'Position', [5, 50, 1920, 955]);
+fig5=figure(5);
+set(fig5, 'Position', [5, 50, 1920, 955]);
 sizz=10;
-subplot(211)
+subplot(311)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(Stress_array)),Stress_array,'r')
 % xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
 ylabel('Stress conc. (mM)','fontweight','bold')
 title('Stress conc.','fontsize',sizz,'fontweight','bold')
-subplot(212)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(GSH_array)),GSH_array,'r')
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('GSH conc. (mM)','fontweight','bold')
-title('GSH conc.','fontsize',sizz,'fontweight','bold')
-ylabel('IAP conc. (mM)','fontweight','bold')
-title('IAP conc.','fontsize',sizz,'fontweight','bold')
-subplot(212)
+subplot(312)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(IAP_array)),IAP_array,'r')
 xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
 ylabel('IAP conc. (mM)','fontweight','bold')
 title('IAP conc.','fontsize',sizz,'fontweight','bold')
-% f7=strcat('Add_',filename);
-% saveas(fig7,f7,'png');
-% %
-fig8=figure(8);
-set(fig8, 'Position', [5, 50, 1920, 955]);
-sec=0.001;
-sizz=10;
-subplot(411)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(cda_array)),cda_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('cDA conc. (mM)','fontweight','bold')
-title('cDA conc.','fontsize',sizz,'fontweight','bold')
-% ylim([0.09 1.11])
-refline([0 mean(cda_array)]);
-fh=strcat(num2str(mean(cda_array)));legend(fh);
-subplot(412)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(vda_array)),vda_array,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('vDA conc. (mM)','fontweight','bold')
-title('vDA conc.','fontsize',sizz,'fontweight','bold')
-% ylim([2.3 2.5])
-refline([0 mean(vda_array)]);
-fh=strcat(num2str(mean(vda_array)));legend(fh);
-subplot(413)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(eda_array)),eda_array,'r')
-% ylim([0.38 0.410])
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('eDA conc. (mM)','fontweight','bold')
-title('eDA conc.','fontsize',sizz,'fontweight','bold')
-refline([0 mean(eda_array)]);
-fh=strcat(num2str(mean(eda_array)));legend(fh);
-subplot(414)
+subplot(313)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(LDOPA_array)),LDOPA_array,'r')
 % ylim([0.38 0.410])
@@ -1012,52 +882,6 @@ refline([0 mean(LDOPA_array)]);
 fh=strcat(num2str(mean(LDOPA_array)));legend(fh);
 % f8=strcat('DA_',filename);
 % saveas(fig8,f8,'png');
-
-fig10=figure(10);
-set(fig10, 'Position', [5, 50, 1920, 955]);
-sec=0.001;
-sizz=10;
-% suptitle('Energy consumption in different cellular processes')
-subplot(411)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(V_id)),V_id,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('E_{id}','fontweight','bold')
-title('Ion dynamics.','fontsize',sizz,'fontweight','bold')
-% ylim([0.09 1.11])
-refline([0 mean(V_id)]);
-fh=strcat(num2str(mean(V_id)));legend(fh);
-subplot(412)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(V_dp)),V_dp,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('E_{dp}','fontweight','bold')
-title('Dopamine packing','fontsize',sizz,'fontweight','bold')
-% ylim([2.3 2.5])
-refline([0 mean(V_dp)]);
-fh=strcat(num2str(mean(V_dp)));legend(fh);
-subplot(413)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(V_rel)),V_rel,'r')
-% xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('E_{vr}','fontweight','bold')
-title('Vesicle recycling','fontsize',sizz,'fontweight','bold')
-% ylim([2.3 2.5])
-refline([0 mean(V_rel)]);
-fh=strcat(num2str(mean(V_rel)));legend(fh);
-subplot(414)
-set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(V_er)),V_er,'r')
-% ylim([0.38 0.410])
-xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('E_{er}','fontweight','bold')
-title('ER','fontsize',sizz,'fontweight','bold')
-refline([0 mean(V_er)]);
-fh=strcat(num2str(mean(V_er)));legend(fh);
-% f10=strcat('ATPothers_',filename);
-% saveas(fig10,f10,'png');
-
-% save(filename)
 
 toc
 % end
