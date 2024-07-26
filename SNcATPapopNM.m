@@ -1,5 +1,5 @@
 %% Substantia Nigra pars compacta model - soma+terminal+ATP+Apoptosis
-function SNcATPapopNM(dur,gl,mt,filename)
+function SNcATPapopNM(dur,gl,mt)
 
 %% CREDITS
 % Created by
@@ -22,23 +22,11 @@ function SNcATPapopNM(dur,gl,mt,filename)
 
 %%
 tic;
-% clear;clc;
-%dur=1000;
-dt=0.1;
-% ATP=0.411;
-%gl=1;
-%mt=1;
-% gl=1;
-% mt=1;
-%filename=strcat('ATP_');
 
-% time1=clock;
 % Time parameters & Random seeding
+dt=0.1;
 tspan=dt:dt:dur;
-% size(tspan)
 Ttime=numel(tspan);
-% load('randseed.mat')
-% srnd = rng;
 
 cai_array=zeros(1,Ttime);atpused_array=zeros(1,Ttime);apop_array=zeros(1,Ttime);
 eda_array=zeros(1,Ttime);V_snc_array=zeros(1,Ttime);ros_mit_array=zeros(1,Ttime);
@@ -123,7 +111,7 @@ Cam=Caminit;y_nk=y_nkinit;y_pc=y_pcinit;m_kdr=m_kdrinit;
 K_i=K_iinit;Na_i=Na_iinit;Ca_i=Ca_iinit;Ca_er=Ca_erinit;Ca_mt=Ca_mtinit;
 
 cda=cdainit;vda=vdainit;
-eda=edainit;Iexts=Iextinit;ATPused=ATPusedinit;
+eda=edainit;ATPused=ATPusedinit;
 cal=calinit;cai_cal=cai_calinit;cal_act=cal_actinit;casp12=casp12init;
 cal_act_casp12=cal_act_casp12init;casp12_act=casp12_actinit;casp9=casp9init;
 casp12_act_casp9=casp12_act_casp9init;casp9_act=casp9_actinit;casp3=casp3init;
@@ -240,15 +228,9 @@ K3 = 5.0*0.001; % mM
 % DA terminal (Tello-Bravo (2012))
 krel = 0.031; %(mM) 0.055 % latest-0.063
 psi = 17.4391793; %(mM/ms)
-nRRP = 5; % :RANGE ~ 10-30
 Veda_max = 1e-6; %(mM/ms)
 Keda = 3e-5; %(mM)
 kcomt = 0.0083511; %(1/ms)
-%vda = 500; %(mM)
-vdao = 500; %(mM)
-vdas = 1e-2; %(mM)
-dara = 5e-5; %(mM)
-dars = 1e-2; %(mM)
 Vsynt_max = 250e-5;%(mM/ms)%30.2e-6 %25e-6 latest-50e-5
 Ksynt = 35e-4; %(mM)
 Ktyr = 46e-3; %(mM)
@@ -293,7 +275,7 @@ kcalif = 1;
 % Calcium pump inhibitor value
 kcpiv = 1;
 
-%Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at 0.019)
+%Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
 Ca_thresh = 0.00010001;
 
 Mit=1;
@@ -385,14 +367,12 @@ sTRP = 82e-3;% (mM)
 Ksld = 32e-3;% (mM)
 Kstyr = 64e-3;% (mM)
 Kstrp = 15e-3;% (mM)
-sLD=3.63685e-3;%35.39059803e-3; %LDOPA=36e-5 Org-36e-3 %mM
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Stimulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Istim=0.000; % Phasic bursting Istim=0.0001
 del=5000/dt;
 dur=200/dt;
-sigg1=0;sigg2=0;phier=0;phimt=0;ada=1;
-counttt=1;lam=0.0001;
+sigg1=0;sigg2=0;phier=0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Equations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for k=1:Ttime
@@ -525,31 +505,14 @@ for k=1:Ttime
     
     jida = kmao * cda;
     
-    %     nRRP = (40/((1+exp(-(vda-vdao)/vdas))*(1+exp((eda-dara)/dars))));
-    %     nRRP = 1;
-    
     % ATP-dependent DA packing
-%     ada=RescaleRange(ATP,0.2,2.3,0.001,1);
     ada=0.001*(exp(3*ATP));
     
     % ATP-dependent vescile recycling
-%     nRRP=5;
     nRRP=1*(exp(0.7*ATP));
-    %     if k>3000/dt && k<5000/dt
-    % %         nRRP=1;
-    %         ada=0.2;
-    %     else
-    %         ada=1;
-    % %         nRRP=10;
-    %     end
-    
-    
-    
+     
     prob = 0.14 * MM_kin((adca+Ca_i),krel,4);
     jrel = psi * nRRP * prob;
-    
-%     Vrel(k)=jrel;
-%     Vmat(k)=jvmat;
     
     jdat = Veda_max * MM_kin(eda,Keda,1);
     
@@ -559,12 +522,10 @@ for k=1:Ttime
     
     % Energy metabolism
     % Energy consumed by active pumps
-    % V_pumps=0;
     V_pumps1 = 1*(1.00000/(F*vol_cyt))*(I_nk+I_pmca);
     V_pumps2 = 1*(jvmat);
     V_pumps3 = 100*jrel;
     v_stim=0;
-    % v_stim1=(1.00000/(F*vol_cyt))*(I_nk+I_pmca);
     v_stim1=0.0*(I_nk+I_pmca);
     J_er=(beta_er/rho_er)*(J_pump);
     
@@ -609,7 +570,6 @@ for k=1:Ttime
     eta_op=eta_op_max-beta_op_asyn*(((ASYNA^4)/((ASYNA^4)+(Kasyn^4))));
     
     Vros_leak=(0.5282/ATP)*(1-eta_op)*V_op;%0.221 or (0.5282/ATP)
-    %     Vros_leak=0.221*(1-eta_op)*V_op;%0.221 or (0.5282/ATP)
     
     Vros_cat=Kros_cat*ROS;
     
@@ -645,20 +605,7 @@ for k=1:Ttime
         Iapp = Ibg;
     end
     Iext=Iapp;
-    
-    if k>3000/dt && k<7500/dt
-%         sLD=36e-3;
-        sLD=3.63685e-3;
-    else
-        sLD=3.63685e-3;
-    end
-    
-    
-    
-    %     if ATP<0.2
-    %         ATP=0.2;
-    %     end
-    
+
     %%%%%%%%%%%%%%%%%%%%%% Differential equations %%%%%%%%%%%%%%%%%%%%%%%%%
     
     V_sncnxt = V_snc + (((F*vol_cyt)/(C_sp*A_pmu))*(J_Na+J_K+2.00000*J_Ca+Iext))*dt;
@@ -792,18 +739,13 @@ for k=1:Ttime
     if Ca_mt > Ca_thresh
         Sig_mts = Ca_mt - Ca_mtinit;
     else
-        Sig_mts = 0
+        Sig_mts = 0;
     end
 
-
-
     disp(k*dt)
+    
 end
 
-phi_er=log(cai_array./caer_array);
-phi_mt=log(cai_array./camt_array);
-
-% [snc_firings1]=ConvertAPtoST(snc_firings, 1);
 snc_firings1=snc_firings;
 
 base1=1/2;
