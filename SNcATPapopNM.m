@@ -67,7 +67,7 @@ edainit = 4e-6; %mM
 ATPusedinit=0;
 calinit=1; %mM
 cai_calinit=0; %mM
-cal_actinit=0; %mM
+cal_actinit=0.2; %mM
 casp12init=1; %mM
 cal_act_casp12init=0; %mM
 casp12_actinit=0; %mM
@@ -83,7 +83,7 @@ PTP_mit_actinit=0;
 Cytc_mitinit=1;
 Cytcinit=0;
 Cytc_casp9init=0;
-IAPinit=0.1;
+IAPinit=0.05;
 casp9_act_IAPinit=0;
 casp3_act_IAPinit=0;
 NADPHinit=250*0.001;%mM
@@ -267,7 +267,7 @@ k13b=0.0035/1e3; % (msec)-1
 % STRESS
 
 % Calcium influence factor on ROSmit
-kcalif = 1;
+kcalif = 2;
 
 % Calcium pump inhibitor value
 kcpiv = 1;
@@ -276,7 +276,7 @@ kcpiv = 1;
 Ca_thresh = 0.00010001;
 
 % IAP release constant
-kconst = 0.00001;
+kconst = 0.001;
 
 Mit=1;
 Sig_ers=000;%0.0001;
@@ -735,6 +735,9 @@ for k=1:Ttime
     gf_injection = kconst;
     %gf_injection = 0;
     IAP = IAP + gf_injection*ROS_mit;
+    if apop > 0
+        apop = apop - 5e-6 * dt - abs(log(apop+1) * 0.00005 * dt);
+    end
 
     disp(k*dt)
 end
@@ -851,8 +854,8 @@ subplot(612)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(CASP9_array)),CASP9_array,'r')
 % xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('\casp9 conc. (mM)','fontweight','bold')
-title('\casp9 conc.','fontsize',sizz,'fontweight','bold')
+ylabel('casp9 conc. (mM)','fontweight','bold')
+title('casp9 conc.','fontsize',sizz,'fontweight','bold')
 
 fig5=figure(5);
 set(fig5, 'Position', [5, 50, 1920, 955]);
