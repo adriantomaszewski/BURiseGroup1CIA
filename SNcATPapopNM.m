@@ -1,5 +1,5 @@
 %% Substantia Nigra pars compacta model - soma+terminal+ATP+Apoptosis
-function SNcATPapopNM(dur,gl,mt,filename)
+function SNcATPapopNM(dur,gl,mt)
 
 %% CREDITS
 % Created by
@@ -9,7 +9,6 @@ function SNcATPapopNM(dur,gl,mt,filename)
 % India
 
 % RUN script for Comprehensive SNc model
-
 
 % SNc with ATP dynamics (Francis et.al., 2013)
 % Dopamine synthesis, storage, release, metabolism and terminal autoreceptors (Bravo, 2012)
@@ -22,23 +21,12 @@ function SNcATPapopNM(dur,gl,mt,filename)
 
 %%
 tic;
-% clear;clc;
-%dur=1000;
-dt=0.1;
-% ATP=0.411;
-%gl=1;
-%mt=1;
-% gl=1;
-% mt=1;
-%filename=strcat('ATP_');
 
-% time1=clock;
 % Time parameters & Random seeding
+dt=0.1;
 tspan=dt:dt:dur;
-% size(tspan)
 Ttime=numel(tspan);
-% load('randseed.mat')
-% srnd = rng;
+
 cai_array=zeros(1,Ttime);atpused_array=zeros(1,Ttime);apop_array=zeros(1,Ttime);
 eda_array=zeros(1,Ttime);V_snc_array=zeros(1,Ttime);ros_mit_array=zeros(1,Ttime);
 cda_array=zeros(1,Ttime);vda_array=zeros(1,Ttime);phi_er=zeros(1,Ttime);
@@ -49,7 +37,7 @@ GAP_array=zeros(1,Ttime);GSH_array=zeros(1,Ttime);F6P_array=zeros(1,Ttime);
 F26P_array=zeros(1,Ttime);PCr_array=zeros(1,Ttime);NADPH_array=zeros(1,Ttime);
 ROS_array=zeros(1,Ttime);CASP9_array=zeros(1,Ttime);ASYNA_array=zeros(1,Ttime);
 ASYNT_array=zeros(1,Ttime);ASYNG_array=zeros(1,Ttime);LB_array=zeros(1,Ttime);
-nai_array=zeros(1,Ttime);ki_array=zeros(1,Ttime);IAP_array=zeros(1,Ttime);
+nai_array=zeros(1,Ttime);ki_array=zeros(1,Ttime);IAP_array=zeros(1,Ttime);Stress_array=zeros(1,Ttime)
 
 V_id=zeros(1,Ttime);
 V_dp=zeros(1,Ttime);
@@ -96,7 +84,7 @@ PTP_mit_actinit=0;
 Cytc_mitinit=1;
 Cytcinit=0;
 Cytc_casp9init=0;
-IAPinit=1;
+IAPinit=0.1;
 casp9_act_IAPinit=0;
 casp3_act_IAPinit=0;
 NADPHinit=250*0.001;%mM
@@ -122,7 +110,7 @@ Cam=Caminit;y_nk=y_nkinit;y_pc=y_pcinit;m_kdr=m_kdrinit;
 K_i=K_iinit;Na_i=Na_iinit;Ca_i=Ca_iinit;Ca_er=Ca_erinit;Ca_mt=Ca_mtinit;
 
 cda=cdainit;vda=vdainit;
-eda=edainit;Iexts=Iextinit;ATPused=ATPusedinit;
+eda=edainit;ATPused=ATPusedinit;
 cal=calinit;cai_cal=cai_calinit;cal_act=cal_actinit;casp12=casp12init;
 cal_act_casp12=cal_act_casp12init;casp12_act=casp12_actinit;casp9=casp9init;
 casp12_act_casp9=casp12_act_casp9init;casp9_act=casp9_actinit;casp3=casp3init;
@@ -160,7 +148,7 @@ sim_msec_mM=1/((1e-3)*(3.6e6));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Constants
-%Soma
+% Soma
 R = 8314.472; %mJ/mol. K
 T = 310.15; %K
 F = 96485.30929; %coulomb/mol.
@@ -171,7 +159,6 @@ vol_pmu = 5; %pl
 fr_cyt = 0.5;
 C_sp = 0.9e6; %pF/cm2
 SVR_pmu = 1.6667e4; %1/cm
-% ATP = 0.411; %mM 0.411 - bursting
 Calbtot = 0.005; % mM
 Camtot = 0.0235; % mM
 kcal_1 = 10; %1/mM.ms
@@ -239,15 +226,9 @@ K3 = 5.0*0.001; % mM
 % DA terminal (Tello-Bravo (2012))
 krel = 0.031; %(mM) 0.055 % latest-0.063
 psi = 17.4391793; %(mM/ms)
-nRRP = 5; % :RANGE ~ 10-30
 Veda_max = 1e-6; %(mM/ms)
 Keda = 3e-5; %(mM)
 kcomt = 0.0083511; %(1/ms)
-%vda = 500; %(mM)
-vdao = 500; %(mM)
-vdas = 1e-2; %(mM)
-dara = 5e-5; %(mM)
-dars = 1e-2; %(mM)
 Vsynt_max = 250e-5;%(mM/ms)%30.2e-6 %25e-6 latest-50e-5
 Ksynt = 35e-4; %(mM)
 Ktyr = 46e-3; %(mM)
@@ -294,6 +275,9 @@ kcpiv = 1;
 
 %Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
 Ca_thresh = 0.00010001;
+
+% IAP release constant
+kconst = 0.00001;
 
 Mit=1;
 Sig_ers=000;%0.0001;
@@ -384,34 +368,19 @@ sTRP = 82e-3;% (mM)
 Ksld = 32e-3;% (mM)
 Kstyr = 64e-3;% (mM)
 Kstrp = 15e-3;% (mM)
-sLD=3.63685e-3;%35.39059803e-3; %LDOPA=36e-5 Org-36e-3 %mM
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Stimulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Istim=0.000; % Phasic bursting Istim=0.0001
 del=5000/dt;
 dur=200/dt;
-sigg1=0;sigg2=0;phier=0;phimt=0;ada=1;
-counttt=1;lam=0.0001;
+sigg1=0;sigg2=0;phier=0;ada=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Equations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for k=1:Ttime
     
     if(k > 5000/dt)
-%         enfatra=0.2;%0.2
-%         enfamit=0.1;
-        
         enfatra=gl;%0.2
         enfamit=mt;
-        
-%         Renfatra=1.*exp(-counttt.*lam);
-%         Renfamit=1.*exp(-counttt.*lam);
-%         counttt=counttt+1;
-%         
-%         enfatra=Renfatra;
-%         enfamit=Renfamit;
-%         
-%         enfatra(enfatra<0.2)=0.2;
-%         enfamit(enfamit<0.1)=0.1;
         
     else
         enfatra=1;
@@ -516,6 +485,7 @@ for k=1:Ttime
     J_Ca = J_ca-1*(J_calb+4.00000*J_cam)-J_pump+J_ch+J_leak-J_in+J_out;
     
     adca=0;
+
     %Terminal
     Vsynt = Vsynt_max/(((Ksynt/(adca+Ca_i))^4)+1);
     jsynt = (Vsynt/(1+((Ktyr/TYR)*(1+(cda/Kicda)+(eda/Kieda)))));
@@ -524,32 +494,15 @@ for k=1:Ttime
     
     jida = kmao * cda;
     
-    %     nRRP = (40/((1+exp(-(vda-vdao)/vdas))*(1+exp((eda-dara)/dars))));
-    %     nRRP = 1;
-    
     % ATP-dependent DA packing
-%     ada=RescaleRange(ATP,0.2,2.3,0.001,1);
     ada=0.001*(exp(3*ATP));
     
     % ATP-dependent vescile recycling
-%     nRRP=5;
     nRRP=1*(exp(0.7*ATP));
-    %     if k>3000/dt && k<5000/dt
-    % %         nRRP=1;
-    %         ada=0.2;
-    %     else
-    %         ada=1;
-    % %         nRRP=10;
-    %     end
-    
-    
-    
+
     prob = 0.14 * MM_kin((adca+Ca_i),krel,4);
     jrel = psi * nRRP * prob;
-    
-%     Vrel(k)=jrel;
-%     Vmat(k)=jvmat;
-    
+
     jdat = Veda_max * MM_kin(eda,Keda,1);
     
     jeda = kcomt * eda;
@@ -558,12 +511,10 @@ for k=1:Ttime
     
     % Energy metabolism
     % Energy consumed by active pumps
-    % V_pumps=0;
     V_pumps1 = 1*(1.00000/(F*vol_cyt))*(I_nk+I_pmca);
     V_pumps2 = 1*(jvmat);
     V_pumps3 = 100*jrel;
     v_stim=0;
-    % v_stim1=(1.00000/(F*vol_cyt))*(I_nk+I_pmca);
     v_stim1=0.0*(I_nk+I_pmca);
     J_er=(beta_er/rho_er)*(J_pump);
     
@@ -608,7 +559,6 @@ for k=1:Ttime
     eta_op=eta_op_max-beta_op_asyn*(((ASYNA^4)/((ASYNA^4)+(Kasyn^4))));
     
     Vros_leak=(0.5282/ATP)*(1-eta_op)*V_op;%0.221 or (0.5282/ATP)
-    %     Vros_leak=0.221*(1-eta_op)*V_op;%0.221 or (0.5282/ATP)
     
     Vros_cat=Kros_cat*ROS;
     
@@ -644,20 +594,9 @@ for k=1:Ttime
         Iapp = Ibg;
     end
     Iext=Iapp;
-    
-    if k>3000/dt && k<7500/dt
-%         sLD=36e-3;
-        sLD=3.63685e-3;
-    else
-        sLD=3.63685e-3;
-    end
-    
-    
-    
-    %     if ATP<0.2
-    %         ATP=0.2;
-    %     end
-    
+
+    sLD=3.63685e-3;
+
     %%%%%%%%%%%%%%%%%%%%%% Differential equations %%%%%%%%%%%%%%%%%%%%%%%%%
     
     V_sncnxt = V_snc + (((F*vol_cyt)/(C_sp*A_pmu))*(J_Na+J_K+2.00000*J_Ca+Iext))*dt;
@@ -762,8 +701,7 @@ for k=1:Ttime
     LDOPA=LDOPAnxt;
     
     V_snc_array(k)=V_snc;
-    
-    %     inds=find(V_snc_array(k) >= -20 && V_snc_array(k) > V_snc_array(k-1) && V_snc_array(k) > V_snc_array(k+1));
+
     inds=find(V_snc <=80 & V_snc >=-20);
     snc_firings=[snc_firings; k+0*inds,inds+0*inds];
     
@@ -775,7 +713,7 @@ for k=1:Ttime
     calb_array(k)=Calb;cam_array(k)=Cam;caer_array(k)=Ca_er;camt_array(k)=Ca_mt;
     
     ATP_array(k)=ATP;LAC_array(k)=LAC;PYR_array(k)=PYR;GAP_array(k)=GAP;GSH_array(k)=GSH;
-    F6P_array(k)=F6P;F26P_array(k)=F26P;PCr_array(k)=PCr;NADPH_array(k)=NADPH;IAP_array(k)=IAP;
+    F6P_array(k)=F6P;F26P_array(k)=F26P;PCr_array(k)=PCr;NADPH_array(k)=NADPH;IAP_array(k)=IAP;Stress_array(k)=Sig_mts;
     
     ROS_array(k)=ROS;CASP9_array(k)=casp9;ASYNA_array(k)=ASYNA;ASYNT_array(k)=ASYNT;
     ASYNG_array(k)=ASYNG;LB_array(k)=LB;
@@ -791,8 +729,14 @@ for k=1:Ttime
     if Ca_mt > Ca_thresh
         Sig_mts = Ca_mt - Ca_mtinit;
     else
-        Sig_mts = 0
+        Sig_mts = 0;
     end
+
+    %%% ADDITION FOR IAP RELEASE BASED ON GROWTH FACTOR AND STRESS
+    gf_injection = kconst;
+    %gf_injection = 0;
+    IAP = IAP + gf_injection*ROS_mit;
+
     disp(k*dt)
 end
 
@@ -1005,10 +949,10 @@ set(fig7, 'Position', [5, 50, 1920, 955]);
 sizz=10;
 subplot(211)
 set(gca,'fontsize',sizz);
-plot(sec*dt*(1:numel(NADPH_array)),NADPH_array,'r')
+plot(sec*dt*(1:numel(Stress_array)),Stress_array,'r')
 % xlabel('Time (sec)','fontsize',sizz,'fontweight','bold')
-ylabel('NADPH conc. (mM)','fontweight','bold')
-title('NADPH conc.','fontsize',sizz,'fontweight','bold')
+ylabel('Stress conc. (mM)','fontweight','bold')
+title('Stress conc.','fontsize',sizz,'fontweight','bold')
 subplot(212)
 set(gca,'fontsize',sizz);
 plot(sec*dt*(1:numel(GSH_array)),GSH_array,'r')
