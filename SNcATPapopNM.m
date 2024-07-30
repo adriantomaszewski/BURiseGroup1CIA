@@ -1,6 +1,8 @@
 %% Substantia Nigra pars compacta model - soma+terminal+ATP+Apoptosis
 function SNcATPapopNM(dur,gl,mt)
 
+
+
 %% CREDITS
 % Created by
 % Vignayanandam R. Muddapu (Ph.D. scholar)
@@ -45,7 +47,28 @@ V_er=zeros(1,Ttime);
 V_rel=zeros(1,Ttime);
 V_pro=zeros(1,Ttime);
 
-%%%%%%%%%%%%%%%% Initializing the differential equations %%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Initializing the differential equations %%%%%%%%%%%%%%%%%
+
+% STRESS
+
+% Calcium influence factor on ROSmit
+kcalif = 2;
+
+% Calcium pump inhibitor value
+kcpiv = 1;
+
+%Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
+Ca_thresh = 0.00010001;
+
+% IAP release constant
+kconst = 0.001;
+
+% CALPAIN
+
+MDL_cont = 0.1; %mM
+
+Ki = 0.00001; %mM
+
 V_sncinit = -49.42;
 Ca_iinit = 0.000188;
 Na_iinit = 4.6876;
@@ -65,9 +88,9 @@ cdainit = 1e-4; %mM%1e-4
 vdainit = 500; %mM 500
 edainit = 4e-6; %mM
 ATPusedinit=0;
-calinit=1; %mM
-cai_calinit=0; %mM
-cal_actinit=0.2; %mM
+calinit=0.0002; %mM
+cai_calinit=0.5; %mM
+cal_actinit=0; %mM
 casp12init=1; %mM
 cal_act_casp12init=0; %mM
 casp12_actinit=0; %mM
@@ -263,20 +286,6 @@ k12f=5; % (mM*msec)-1
 k12b=0.0035/1e3; % (msec)-1
 k13f=5; % (mM*msec)-1
 k13b=0.0035/1e3; % (msec)-1
-
-% STRESS
-
-% Calcium influence factor on ROSmit
-kcalif = 2;
-
-% Calcium pump inhibitor value
-kcpiv = 1;
-
-%Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
-Ca_thresh = 0.00010001;
-
-% IAP release constant
-kconst = 0.001;
 
 Mit=1;
 Sig_ers=000;%0.0001;
@@ -619,7 +628,7 @@ for k=1:Ttime
     edanxt = eda+(jrel - jdat - jeda)*dt;%eda
     calnxt = cal+(-k3f*(Sig_ers*cal)+k3b*(cai_cal))*dt;%cal
     cai_calnxt = cai_cal+(k3f*(Sig_ers*cal)-k3b*(cai_cal)-k4f*(cai_cal))*dt;%cai_cal
-    cal_actnxt = cal_act+(k4f*(cai_cal)-k5f*(cal_act*casp12)+k5b*(cal_act_casp12))*dt;%cal_act
+    cal_actnxt = cal_act+((k4f*cai_cal)/(1+(MDL_cont/Ki))-k5f*(cal_act*casp12)+k5b*(cal_act_casp12))*dt;%cal_act
     casp12nxt = casp12+(-k5f*(cal_act*casp12)+k5b*(cal_act_casp12))*dt;%casp12
     cal_act_casp12nxt = cal_act_casp12+(k5f*(cal_act*casp12)-k5b*(cal_act_casp12)-k6f*(cal_act_casp12))*dt;%cal_act_casp12
     casp12_actnxt = casp12_act+(k6f*(cal_act_casp12)-k7f*(casp12_act*casp9)+k7b*(casp12_act_casp9))*dt;%casp12_act

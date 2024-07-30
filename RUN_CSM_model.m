@@ -23,4 +23,4 @@ filename = 'test';
 
 dur=60000; % Duration of simulation in milliseconds
 
-SNcATPapopNM(dur,gl,mt)
+SNcATPapopNM(dur,gl,mt);
