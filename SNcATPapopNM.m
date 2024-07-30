@@ -67,7 +67,7 @@ kconst = 0.001;
 
 MDL_cont = 0.1; %mM
 
-Ki = 0.00001; %mM
+Ki = 0.1; %mM
 
 V_sncinit = -49.42;
 Ca_iinit = 0.000188;
