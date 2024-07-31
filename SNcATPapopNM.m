@@ -55,7 +55,7 @@ V_pro=zeros(1,Ttime);
 kcalif = 2;
 
 % Calcium pump inhibitor value
-kcpiv = 0.3;
+kcpiv = 1; % 0 to 1
 
 %Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
 Ca_thresh = 0.00010001;
