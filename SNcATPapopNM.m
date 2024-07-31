@@ -55,13 +55,15 @@ V_pro=zeros(1,Ttime);
 kcalif = 2;
 
 % Calcium pump inhibitor value
-kcpiv = 1;
+kcpiv = 0.3;
 
 %Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
 Ca_thresh = 0.00010001;
 
 % IAP release constant
-kconst = 0.001;
+IAPinit=0.05;
+
+kconst = 0; %0.001
 
 % CALPAIN
 
@@ -106,7 +108,6 @@ PTP_mit_actinit=0;
 Cytc_mitinit=1;
 Cytcinit=0;
 Cytc_casp9init=0;
-IAPinit=0.05;
 casp9_act_IAPinit=0;
 casp3_act_IAPinit=0;
 NADPHinit=250*0.001;%mM
@@ -744,8 +745,8 @@ for k=1:Ttime
     gf_injection = kconst;
     %gf_injection = 0;
     IAP = IAP + gf_injection*ROS_mit;
-    if apop > 0
-        apop = apop - 5e-6 * dt - abs(log(apop+1) * 0.00005 * dt);
+    if apop > 0 
+        apop = apop - 1e-6 * dt - abs(log(apop+1) * 0.000005 * dt);
     end
 
     disp(k*dt)
