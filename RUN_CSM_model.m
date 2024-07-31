@@ -21,6 +21,18 @@ gl = 1; % Glucose concentration in mM
 mt = 1; % Extend of oxygen available (0-no oxygen; 1-adequate oxygen)
 filename = 'test';
 
-dur=60000; % Duration of simulation in milliseconds
+dur=10000; % Duration of simulation in milliseconds
 
-SNcATPapopNM(dur,gl,mt);
+apoparray = ones(11,11);
+stressarray = ones(11, 11);
+calcinhibstressarray = ones(21);
+
+for i=0:10
+    for j=0:10
+        [maxapop, maxstress] = SNcATPapopNM(dur,gl,mt, 0, 0, i*0.0002, j*2);
+        disp(maxapop)
+        disp(maxstress)
+        apoparray(i+1, j+1) = maxapop;
+        stressarray(i+1, j+1) = maxstress;
+    end
+end

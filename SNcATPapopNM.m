@@ -1,5 +1,5 @@
 %% Substantia Nigra pars compacta model - soma+terminal+ATP+Apoptosis
-function SNcATPapopNM(dur,gl,mt)
+function [maxapop, maxstress] = SNcATPapopNM(dur,gl,mt,camtinhib, caiinhib, gf, MDLparam)
 
 
 
@@ -54,8 +54,11 @@ V_pro=zeros(1,Ttime);
 % Calcium influence factor on ROSmit
 kcalif = 2;
 
-% Calcium pump inhibitor value
-kcpiv = 1; % 0 to 1
+% Mitochondrial calcium uniporter pump inhibitor value
+kcpiv = 1-camtinhib; % 0 to 1
+
+% Cellular calcium pump inhibitor value
+kccpiv = 1-caiinhib; % 0 to 1
 
 %Calcium threshhold value for oxidation stress to occur (No apoptosis occurs at .18)
 Ca_thresh = 0.00010001;
@@ -63,11 +66,11 @@ Ca_thresh = 0.00010001;
 % IAP release constant
 IAPinit=0.05;
 
-kconst = 0; %0.001
+kconst = gf; %0.001
 
 % CALPAIN
 
-MDL_cont = 0.1; %mM
+MDL_cont = MDLparam; %mM %0.1
 
 Ki = 0.1; %mM
 
@@ -609,7 +612,7 @@ for k=1:Ttime
     %%%%%%%%%%%%%%%%%%%%%% Differential equations %%%%%%%%%%%%%%%%%%%%%%%%%
     
     V_sncnxt = V_snc + (((F*vol_cyt)/(C_sp*A_pmu))*(J_Na+J_K+2.00000*J_Ca+Iext))*dt;
-    Ca_inxt = Ca_i + (J_Ca)*dt;
+    Ca_inxt = Ca_i + kccpiv*(J_Ca)*dt;
     Na_inxt = Na_i + (J_Na)*dt;
     K_inxt = K_i + (J_K)*dt;
     Calbnxt = Calb + (-J_calb)*dt;
@@ -757,7 +760,11 @@ snc_firings1=snc_firings;
 base1=1/2;
 sncfrequency=size(snc_firings1,1)/(2*base1.*dt.*(Ttime).*1e-3);
 
+maxapop = max(apop_array);
+maxstress = max(ros_mit_array);
+
 %% plot
+%{
 sec=0.001;
 fig1=figure(1);
 set(fig1, 'Position', [5, 50, 1920, 955]);
@@ -893,6 +900,6 @@ refline([0 mean(LDOPA_array)]);
 fh=strcat(num2str(mean(LDOPA_array)));legend(fh);
 % f8=strcat('DA_',filename);
 % saveas(fig8,f8,'png');
-
+%}
 toc
 % end
